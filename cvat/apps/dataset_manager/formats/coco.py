@@ -4,6 +4,7 @@
 # SPDX-License-Identifier: MIT
 
 import zipfile
+import random
 
 from datumaro.components.dataset import Dataset
 from datumaro.components.annotation import AnnotationType
@@ -13,6 +14,39 @@ from cvat.apps.dataset_manager.bindings import GetCVATDataExtractor, \
 from cvat.apps.dataset_manager.util import make_zip_archive
 
 from .registry import dm_env, exporter, importer
+
+@exporter(name='COCO_split', ext='ZIP', version='1.0')
+def _export(dst_file, temp_dir, instance_data, save_images=False):
+    dataset = Dataset.from_extractors(GetCVATDataExtractor(
+        instance_data, include_images=save_images), env=dm_env)
+    # Convert the dataset to a list
+    items = list(dataset)
+
+    # Shuffle the list
+    random.shuffle(items)
+
+    # Calculate the indices for the training, validation, and testing subsets
+    total_items = len(items)
+    train_end = int(total_items * 0.8)
+    val_end = train_end + int(total_items * 0.1)
+
+    # Use slicing to get the subsets
+    train_items = items[:train_end]
+    val_items = items[train_end:val_end]
+    test_items = items[val_end:]
+
+    train_dataset = Dataset.from_iterable(train_items, env=dm_env)
+    val_dataset = Dataset.from_iterable(val_items, env=dm_env)
+    test_dataset = Dataset.from_iterable(test_items, env=dm_env)
+
+    dataset.export(temp_dir+ '/train_coco', 'coco_instances', save_images=train_dataset,
+        merge_images=True)
+    dataset.export(temp_dir+ '/val_coco', 'coco_instances', save_images=val_dataset,
+        merge_images=True)
+    dataset.export(temp_dir+ '/test_coco', 'coco_instances', save_images=test_dataset,
+        merge_images=True)
+
+    make_zip_archive(temp_dir, dst_file)
 
 @exporter(name='COCO', ext='ZIP', version='1.0')
 def _export(dst_file, temp_dir, instance_data, save_images=False):
