@@ -2,7 +2,7 @@
 # Copyright (C) 2023-2024 CVAT.ai Corporation
 #
 # SPDX-License-Identifier: MIT
-
+import logging
 import zipfile
 import random
 
@@ -16,7 +16,7 @@ from cvat.apps.dataset_manager.util import make_zip_archive
 from .registry import dm_env, exporter, importer
 
 @exporter(name='COCO_split', ext='ZIP', version='1.0')
-def _export(dst_file, temp_dir, instance_data, save_images=False):
+def _export_split(dst_file, temp_dir, instance_data, save_images=False):
     dataset = Dataset.from_extractors(GetCVATDataExtractor(
         instance_data, include_images=save_images), env=dm_env)
     # Convert the dataset to a list
@@ -39,11 +39,11 @@ def _export(dst_file, temp_dir, instance_data, save_images=False):
     val_dataset = Dataset.from_iterable(val_items, env=dm_env)
     test_dataset = Dataset.from_iterable(test_items, env=dm_env)
 
-    dataset.export(temp_dir+ '/train_coco', 'coco_instances', save_images=train_dataset,
+    train_dataset.export(temp_dir+ '/train_coco', 'coco_instances', save_images=save_images,
         merge_images=True)
-    dataset.export(temp_dir+ '/val_coco', 'coco_instances', save_images=val_dataset,
+    val_dataset.export(temp_dir+ '/val_coco', 'coco_instances', save_images=save_images,
         merge_images=True)
-    dataset.export(temp_dir+ '/test_coco', 'coco_instances', save_images=test_dataset,
+    test_dataset.export(temp_dir+ '/test_coco', 'coco_instances', save_images=save_images,
         merge_images=True)
 
     make_zip_archive(temp_dir, dst_file)
