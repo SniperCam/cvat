@@ -23,8 +23,15 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Build and push
+      - name: Build and push ui
+        uses: docker/build-push-action@v5
+        with:
+          file: Dockerfile.ui
+          push: true
+          tags: ghcr.io/snipercam/cvat-ui:${{ github.event.release.tag_name }}
+
+      - name: Build and push server
         uses: docker/build-push-action@v5
         with:
           push: true
-          tags: ghcr.io/snipercam/cvat:${{ github.event.release.tag_name }}
+          tags: ghcr.io/snipercam/cvat-server:${{ github.event.release.tag_name }}
