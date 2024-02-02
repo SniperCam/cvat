@@ -7,6 +7,7 @@ import os.path as osp
 from glob import glob
 
 from pyunpack import Archive
+import random
 
 from cvat.apps.dataset_manager.bindings import (GetCVATDataExtractor,
     import_dm_annotations, match_dm_item, find_dataset_root)
@@ -23,6 +24,39 @@ def _export(dst_file, temp_dir, instance_data, save_images=False):
     with GetCVATDataExtractor(instance_data, include_images=save_images) as extractor:
         dataset = Dataset.from_extractors(extractor, env=dm_env)
         dataset.export(temp_dir, 'yolo', save_images=save_images)
+
+    make_zip_archive(temp_dir, dst_file)
+
+@exporter(name='YOLO_split', ext='ZIP', version='1.1')
+def _export_split(dst_file, temp_dir, instance_data, save_images=False):
+    with GetCVATDataExtractor(instance_data, include_images=save_images) as extractor:
+        dataset = Dataset.from_extractors(extractor, env=dm_env)
+        # Convert the dataset to a list
+        items = list(dataset)
+
+        # Shuffle the list
+        random.shuffle(items)
+
+        # Calculate the indices for the training, validation, and testing subsets
+        total_items = len(items)
+        train_end = int(total_items * 0.8)
+        val_end = train_end + int(total_items * 0.1)
+
+        # Use slicing to get the subsets
+        train_items = items[:train_end]
+        val_items = items[train_end:val_end]
+        test_items = items[val_end:]
+
+        train_dataset = Dataset.from_iterable(train_items, env=dm_env)
+        val_dataset = Dataset.from_iterable(val_items, env=dm_env)
+        test_dataset = Dataset.from_iterable(test_items, env=dm_env)
+
+        train_dataset.export(temp_dir+ '/train', 'coco_instances', save_images=save_images,
+            merge_images=True)
+        val_dataset.export(temp_dir+ '/validate', 'coco_instances', save_images=save_images,
+            merge_images=True)
+        test_dataset.export(temp_dir+ '/test', 'coco_instances', save_images=save_images,
+            merge_images=True)
 
     make_zip_archive(temp_dir, dst_file)
 
