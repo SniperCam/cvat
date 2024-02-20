@@ -51,12 +51,9 @@ def _export_split(dst_file, temp_dir, instance_data, save_images=False):
         val_dataset = Dataset.from_iterable(val_items, env=dm_env)
         test_dataset = Dataset.from_iterable(test_items, env=dm_env)
 
-        train_dataset.export(temp_dir+ '/train', 'yolo', save_images=save_images,
-            merge_images=True)
-        val_dataset.export(temp_dir+ '/validate', 'yolo', save_images=save_images,
-            merge_images=True)
-        test_dataset.export(temp_dir+ '/test', 'yolo', save_images=save_images,
-            merge_images=True)
+        train_dataset.export(temp_dir+ '/train', 'yolo', save_images=save_images)
+        val_dataset.export(temp_dir+ '/validate', 'yolo', save_images=save_images)
+        test_dataset.export(temp_dir+ '/test', 'yolo', save_images=save_images)
 
     make_zip_archive(temp_dir, dst_file)
 
