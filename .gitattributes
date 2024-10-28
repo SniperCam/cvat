@@ -1,4 +1,5 @@
-*               text=auto whitespace=trailing-space,space-before-tab,-indent-with-non-tab,tab-in-indent,tabwidth=4
+*               whitespace=trailing-space,space-before-tab,-indent-with-non-tab,tab-in-indent,tabwidth=4
+*               text eol=lf
 
 .git*           text export-ignore
 
