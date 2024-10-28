@@ -70,7 +70,7 @@ function ExportDatasetModal(props: StateToProps): JSX.Element {
                 setInstanceType(`job #${instance.id}`);
             }
             if (instance.mode === 'interpolation' && instance.dimension === '2d') {
-                form.setFieldsValue({ selectedFormat: 'CVAT for video 1.1' });
+                form.setFieldsValue({ selectedFormat: 'YOLO 1.1' });
             } else if (instance.mode === 'annotation' && instance.dimension === '2d') {
                 form.setFieldsValue({ selectedFormat: 'CVAT for images 1.1' });
             }
@@ -180,7 +180,7 @@ function ExportDatasetModal(props: StateToProps): JSX.Element {
                         name='saveImages'
                         valuePropName='checked'
                     >
-                        <Switch className='cvat-modal-export-save-images' />
+                        <Switch className='cvat-modal-export-save-images' valuePropName='checked'/>
                     </Form.Item>
                     <Text strong>Save images</Text>
                 </Space>
