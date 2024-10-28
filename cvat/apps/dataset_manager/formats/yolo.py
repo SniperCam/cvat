@@ -47,9 +47,9 @@ def _export_split(dst_file, temp_dir, instance_data, save_images=False):
         val_items = items[train_end:val_end]
         test_items = items[val_end:]
 
-        train_dataset = Dataset.from_iterable(train_items, env=dm_env)
-        val_dataset = Dataset.from_iterable(val_items, env=dm_env)
-        test_dataset = Dataset.from_iterable(test_items, env=dm_env)
+        train_dataset = Dataset.from_iterable(train_items, env=dm_env, categories=dataset.categories())
+        val_dataset = Dataset.from_iterable(val_items, env=dm_env, categories=dataset.categories())
+        test_dataset = Dataset.from_iterable(test_items, env=dm_env, categories=dataset.categories())
 
         train_dataset.export(temp_dir+ '/train', 'yolo', save_images=save_images)
         val_dataset.export(temp_dir+ '/validate', 'yolo', save_images=save_images)
