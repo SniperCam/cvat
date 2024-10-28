@@ -32,7 +32,7 @@ type FormValues = {
 
 const initialValues: FormValues = {
     selectedFormat: undefined,
-    saveImages: false,
+    saveImages: true,
     customName: undefined,
     targetStorage: {
         location: StorageLocation.LOCAL,
@@ -72,7 +72,7 @@ function ExportDatasetModal(props: StateToProps): JSX.Element {
             if (instance.mode === 'interpolation' && instance.dimension === '2d') {
                 form.setFieldsValue({ selectedFormat: 'YOLO 1.1' });
             } else if (instance.mode === 'annotation' && instance.dimension === '2d') {
-                form.setFieldsValue({ selectedFormat: 'CVAT for images 1.1' });
+                form.setFieldsValue({ selectedFormat: 'YOLO 1.1' });
             }
         }
     }, [instance]);
@@ -180,7 +180,7 @@ function ExportDatasetModal(props: StateToProps): JSX.Element {
                         name='saveImages'
                         valuePropName='checked'
                     >
-                        <Switch className='cvat-modal-export-save-images' valuePropName='checked'/>
+                        <Switch className='cvat-modal-export-save-images'/>
                     </Form.Item>
                     <Text strong>Save images</Text>
                 </Space>
